@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Drone Organisering</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Velkommen, DroneAdmin</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Legg Til Drone</h2>
+            <form id="addDroneForm">
+                <label for="name">Drone Navn:</label>
+                <input type="text" id="name" name="name" required placeholder="Drone navn">
+
+                <label for="regNum">Regnummer:</label>
+                <input type="text" id="regNum" name="regNum" required placeholder="Drone regnummer">
+
+                <label for="lastMaintenance">Siste Vedlikehold:</label>
+                <input type="date" id="lastMaintenance" name="lastMaintenance" required>
+
+                <label for="isLoaned">Er Utlånt?</label>
+                <select id="isLoaned" name="isLoaned" required>
+                    <option value="Nei">Nei</option>
+                    <option value="Ja">Ja</option>
+                </select>
+
+                <button type="submit">Legg Til</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 Drone Organisering</p>
+    </footer>
+
+    <script>
+        // Handle form submission to add a new drone
+        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Get form values
+            const name = document.getElementById("name").value;
+            const regNum = document.getElementById("regNum").value;
+            const lastMaintenance = document.getElementById("lastMaintenance").value;
+            const isLoaned = document.getElementById("isLoaned").value;
+
+            // Normally here, you would send this data to a server, but for now, we just log it
+            console.log(`Drone Added: ${name}, ${regNum}, ${lastMaintenance}, ${isLoaned}`);
+
+            alert(`Drone "${name}" ble lagt til!`);
+        });
+    </script>
+</body>
+</html>

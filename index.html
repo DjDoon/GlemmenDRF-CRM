@@ -8,59 +8,41 @@
 </head>
 <body>
     <header>
-        <h1>Drone Organisering</h1>
+        <h1>Velkommen til Drone Organisering</h1>
     </header>
 
     <main>
-        <section>
-            <h2>Oversikt over droner</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Navn</th>
-                        <th>Regnummer</th>
-                        <th>Siste Vedlikehold</th>
-                        <th>Utlånt</th>
-                        <th>Utlånt Til</th>
-                        <th>Utlånt Dato</th>
-                        <th>Forventet Retur</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Drone A</td>
-                        <td>123-ABC</td>
-                        <td>2024-11-15</td>
-                        <td>Ja</td>
-                        <td>Ola Nordmann</td>
-                        <td>2024-11-20</td>
-                        <td>2024-11-30</td>
-                    </tr>
-                    <tr>
-                        <td>Drone B</td>
-                        <td>456-DEF</td>
-                        <td>2024-11-01</td>
-                        <td>Nei</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td>Drone C</td>
-                        <td>789-GHI</td>
-                        <td>2024-10-20</td>
-                        <td>Ja</td>
-                        <td>Kari Nordmann</td>
-                        <td>2024-11-10</td>
-                        <td>2024-11-25</td>
-                    </tr>
-                </tbody>
-            </table>
+        <section class="login-section">
+            <h2>Logg inn</h2>
+            <form id="loginForm">
+                <label for="identifier">Skriv inn ID (Drone eller DroneAdmin):</label>
+                <input type="text" id="identifier" name="identifier" required placeholder="F.eks. Drone eller DroneAdmin">
+                <button type="submit">Logg inn</button>
+            </form>
         </section>
     </main>
 
     <footer>
         <p>© 2024 Drone Organisering</p>
     </footer>
+
+    <script>
+        // JavaScript for login functionality
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form from submitting
+
+            const identifier = document.getElementById("identifier").value.trim();
+
+            if (identifier === "Drone") {
+                // Redirect to user page
+                window.location.href = "bruker.html";
+            } else if (identifier === "DroneAdmin") {
+                // Redirect to admin page
+                window.location.href = "admin.html";
+            } else {
+                alert("Ugyldig ID. Vennligst prøv igjen.");
+            }
+        });
+    </script>
 </body>
 </html>
