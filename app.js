@@ -49,7 +49,7 @@ function renderDroneList(drones) {
 async function addDrone(droneData) {
   try {
     const dronesCollection = collection(db, "droner");  // Reference to 'droner' collection
-    const docRef = await addDoc(dronesCollection, droneData);  // Add the document
+    const docRef = await addDoc(dronesCollection, droneData);  // Add the document to Firestore
     console.log("Drone added with ID: ", docRef.id);
   } catch (e) {
     console.error("Error adding drone: ", e);

@@ -82,6 +82,7 @@
         // Import the functions you need from Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getDrones, addDrone } from './app.js';
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -119,7 +120,7 @@
         // Fetch drones from Firestore
         async function fetchDrones() {
             try {
-                const dronesCollection = collection(db, "drones");
+                const dronesCollection = collection(db, "droner");
                 const droneSnapshot = await getDocs(dronesCollection);
                 const drones = droneSnapshot.docs.map(doc => doc.data());
                 renderDroneList(drones);
@@ -142,30 +143,21 @@
                 returnDate: document.getElementById("returnDate").value
             };
 
-            try {
-                // Add the new drone to Firestore
-                await addDoc(collection(db, "drones"), newDrone);
-                alert("Drone lagt til!");
-                fetchDrones(); // Re-fetch drones after adding
-            } catch (error) {
-                alert("Feil ved lagring: " + error.message);
-            }
-
-            // Reset the form
-            document.getElementById("addDroneForm").reset();
+            await addDrone(newDrone);
+            fetchDrones(); // Refresh drone list after adding
         });
 
-        // Show drone list
+        // Button to show drone list
         document.getElementById("viewDronesBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "block";
             document.getElementById("addDroneSection").style.display = "none";
-            fetchDrones(); // Fetch drones from Firestore when viewing list
+            fetchDrones();
         });
 
-        // Show add drone form
+        // Button to show add drone form
         document.getElementById("addDroneBtn").addEventListener("click", function() {
-            document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
+            document.getElementById("droneListSection").style.display = "none";
         });
     </script>
 </body>
