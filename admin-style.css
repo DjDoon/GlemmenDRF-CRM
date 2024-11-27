@@ -20,6 +20,7 @@ button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {
@@ -27,7 +28,7 @@ button:hover {
 }
 
 main {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 20px auto;
     background-color: white;
     padding: 20px;
@@ -51,13 +52,54 @@ table thead {
 }
 
 table th, table td {
-    padding: 10px;
+    padding: 12px 15px;
     text-align: left;
     border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+table th {
+    width: auto;
+}
+
+table td {
+    width: auto;
+    word-wrap: break-word; /* Wrap text if needed */
 }
 
 table tr:nth-child(even) {
     background-color: #f9f9f9;
+}
+
+table td input, table td select {
+    width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.edit-btn {
+    background-color: #f0ad4e;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.edit-btn:hover {
+    background-color: #ec971f;
+}
+
+.save-btn {
+    background-color: #5bc0de;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.save-btn:hover {
+    background-color: #31b0d5;
 }
 
 footer {

@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Drone Organisering</title>
     <link rel="stylesheet" href="admin-style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input, select {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+        }
+        button {
+            padding: 8px 12px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background-color: #f0ad4e;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .save-btn {
+            background-color: #5bc0de;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -18,7 +54,7 @@
         </section>
 
         <!-- Drone list -->
-        <section id="droneListSection" style="display:none;">
+        <section id="droneListSection">
             <h2>Oversikt over Droner</h2>
             <table id="droneListTable">
                 <thead>
@@ -30,6 +66,7 @@
                         <th>Utlånt Til</th>
                         <th>Utlånt Dato</th>
                         <th>Forventet Retur</th>
+                        <th>Rediger</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,7 +117,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB2bnVlprwEDxb-t0yfCui5wpI5_LbKhf8",
@@ -95,9 +132,68 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Function to render drone list
+        function renderDroneList(drones) {
+            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear previous table content
+
+            drones.forEach((drone, index) => {
+                const row = tableBody.insertRow();
+
+                row.insertCell(0).textContent = drone.name;
+                row.insertCell(1).textContent = drone.regNum;
+                row.insertCell(2).textContent = drone.lastMaintenance;
+                row.insertCell(3).textContent = drone.isLoaned;
+                row.insertCell(4).textContent = drone.loanedTo || "-";
+                row.insertCell(5).textContent = drone.loanedDate || "-";
+                row.insertCell(6).textContent = drone.returnDate || "-";
+
+                // Add an edit button to each row
+                const editCell = row.insertCell(7);
+                const editButton = document.createElement("button");
+                editButton.textContent = "Rediger";
+                editButton.classList.add("edit-btn");
+                editButton.addEventListener("click", () => editDrone(drone.id, index));
+                editCell.appendChild(editButton);
+            });
+        }
+
+        // Fetch drones from Firestore
+        async function fetchDrones() {
+            const dronesCollection = collection(db, "drones");
+            const droneSnapshot = await getDocs(dronesCollection);
+            const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderDroneList(drones);
+        }
+
+        // Edit drone details
+        async function editDrone(droneId, rowIndex) {
+            const droneRow = document.getElementById("droneListTable").rows[rowIndex + 1];
+
+            const lastMaintenance = prompt("Siste Vedlikehold (YYYY-MM-DD):", droneRow.cells[2].textContent);
+            const isLoaned = prompt("Er Utlånt? (Ja/Nei):", droneRow.cells[3].textContent);
+            const loanedTo = prompt("Utlånt Til:", droneRow.cells[4].textContent);
+            const loanedDate = prompt("Utlånt Dato (YYYY-MM-DD):", droneRow.cells[5].textContent);
+            const returnDate = prompt("Forventet Retur (YYYY-MM-DD):", droneRow.cells[6].textContent);
+
+            const updatedData = {
+                lastMaintenance,
+                isLoaned,
+                loanedTo,
+                loanedDate,
+                returnDate
+            };
+
+            const droneDoc = doc(db, "drones", droneId);
+            await updateDoc(droneDoc, updatedData);
+
+            alert("Drone oppdatert!");
+            fetchDrones();  // Re-fetch drones after update
+        }
+
         // Add new drone to Firestore
         document.getElementById("addDroneForm").addEventListener("submit", async function(event) {
-            event.preventDefault();  // Prevent form from refreshing the page
+            event.preventDefault();
 
             const newDrone = {
                 name: document.getElementById("name").value,
@@ -109,64 +205,23 @@
                 returnDate: document.getElementById("returnDate").value
             };
 
-            console.log("Legger til drone med data:", newDrone);
-
             try {
-                // Try adding the drone to the Firestore collection
-                const docRef = await addDoc(collection(db, "drones"), newDrone);
-                console.log("Drone lagret med ID: ", docRef.id);
-
-                // Alert and reset the form after successful add
+                await addDoc(collection(db, "drones"), newDrone);
                 alert("Drone lagt til!");
-                document.getElementById("addDroneForm").reset();
+                fetchDrones(); // Re-fetch drones after adding
             } catch (error) {
-                console.error("Feil ved lagring: ", error);
-                alert("Feil ved lagring: " + error.message);
+                alert("Det oppsto en feil: " + error.message);
             }
         });
+
+        // Initialize app
+        document.getElementById("viewDronesBtn").addEventListener("click", fetchDrones);
 
         // Show add drone form
         document.getElementById("addDroneBtn").addEventListener("click", function() {
-            document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
+            document.getElementById("droneListSection").style.display = "none";
         });
-
-        // Show drone list
-        document.getElementById("viewDronesBtn").addEventListener("click", function() {
-            document.getElementById("droneListSection").style.display = "block";
-            document.getElementById("addDroneSection").style.display = "none";
-            fetchDrones(); // Fetch drones from Firestore when viewing list
-        });
-
-        // Fetch drones from Firestore and render them in table
-        async function fetchDrones() {
-            try {
-                const dronesCollection = collection(db, "drones");
-                const droneSnapshot = await getDocs(dronesCollection);
-                const drones = droneSnapshot.docs.map(doc => doc.data());
-                renderDroneList(drones);
-            } catch (error) {
-                console.error("Feil ved henting av droner: ", error);
-            }
-        }
-
-        // Render drone list in the table
-        function renderDroneList(drones) {
-            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = '';  // Clear existing rows
-
-            drones.forEach(drone => {
-                const row = tableBody.insertRow();
-
-                row.insertCell(0).textContent = drone.name;
-                row.insertCell(1).textContent = drone.regNum;
-                row.insertCell(2).textContent = drone.lastMaintenance;
-                row.insertCell(3).textContent = drone.isLoaned;
-                row.insertCell(4).textContent = drone.loanedTo || "-";
-                row.insertCell(5).textContent = drone.loanedDate || "-";
-                row.insertCell(6).textContent = drone.returnDate || "-";
-            });
-        }
     </script>
 </body>
 </html>
