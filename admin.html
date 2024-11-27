@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Drone Organisering</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin-style.css">
 </head>
 <body>
     <header>
@@ -13,6 +13,50 @@
 
     <main>
         <section>
+            <button id="viewDronesBtn">Vis Droner</button>
+            <button id="addDroneBtn">Legg Til Drone</button>
+        </section>
+
+        <!-- Drone list -->
+        <section id="droneListSection">
+            <h2>Oversikt over Droner</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Regnummer</th>
+                        <th>Siste Vedlikehold</th>
+                        <th>Utlånt</th>
+                        <th>Utlånt Til</th>
+                        <th>Utlånt Dato</th>
+                        <th>Forventet Retur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Drone A</td>
+                        <td>123-ABC</td>
+                        <td>2024-11-15</td>
+                        <td>Ja</td>
+                        <td>Ola Nordmann</td>
+                        <td>2024-11-20</td>
+                        <td>2024-11-30</td>
+                    </tr>
+                    <tr>
+                        <td>Drone B</td>
+                        <td>456-DEF</td>
+                        <td>2024-11-01</td>
+                        <td>Nei</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Add drone form -->
+        <section id="addDroneSection" style="display:none;">
             <h2>Legg Til Drone</h2>
             <form id="addDroneForm">
                 <label for="name">Drone Navn:</label>
@@ -40,20 +84,19 @@
     </footer>
 
     <script>
-        // Handle form submission to add a new drone
+        document.getElementById("viewDronesBtn").addEventListener("click", function() {
+            document.getElementById("droneListSection").style.display = "block";
+            document.getElementById("addDroneSection").style.display = "none";
+        });
+
+        document.getElementById("addDroneBtn").addEventListener("click", function() {
+            document.getElementById("droneListSection").style.display = "none";
+            document.getElementById("addDroneSection").style.display = "block";
+        });
+
         document.getElementById("addDroneForm").addEventListener("submit", function(event) {
             event.preventDefault();
-
-            // Get form values
-            const name = document.getElementById("name").value;
-            const regNum = document.getElementById("regNum").value;
-            const lastMaintenance = document.getElementById("lastMaintenance").value;
-            const isLoaned = document.getElementById("isLoaned").value;
-
-            // Normally here, you would send this data to a server, but for now, we just log it
-            console.log(`Drone Added: ${name}, ${regNum}, ${lastMaintenance}, ${isLoaned}`);
-
-            alert(`Drone "${name}" ble lagt til!`);
+            alert("Drone lagt til!");
         });
     </script>
 </body>
