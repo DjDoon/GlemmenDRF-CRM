@@ -12,7 +12,6 @@
     </header>
 
     <main>
-        <!-- Buttons to show drone list or add new drone -->
         <section>
             <button id="viewDronesBtn">Vis Droner</button>
             <button id="addDroneBtn">Legg Til Drone</button>
@@ -34,7 +33,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Existing drone data will be injected here -->
+                    <!-- Drone data will be injected here -->
                 </tbody>
             </table>
         </section>
@@ -76,37 +75,35 @@
         <p>© 2024 Drone Organisering</p>
     </footer>
 
-    <script>
-        let droneList = [];
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script type="module">
+        // Import the functions you need from Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-        // Eksempler på eksisterende droner
-        const initialDrones = [
-            {
-                name: "Drone A",
-                regNum: "123-ABC",
-                lastMaintenance: "2024-11-15",
-                isLoaned: "Ja",
-                loanedTo: "Ola Nordmann",
-                loanedDate: "2024-11-20",
-                returnDate: "2024-11-30"
-            },
-            {
-                name: "Drone B",
-                regNum: "456-DEF",
-                lastMaintenance: "2024-11-01",
-                isLoaned: "Nei",
-                loanedTo: "",
-                loanedDate: "",
-                returnDate: ""
-            }
-        ];
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2bnVlprwEDxb-t0yfCui5wpI5_LbKhf8",
+            authDomain: "crmdronefag.firebaseapp.com",
+            projectId: "crmdronefag",
+            storageBucket: "crmdronefag.appspot.com",
+            messagingSenderId: "805041383422",
+            appId: "1:805041383422:web:325d2ebea31b66270fc2af",
+            measurementId: "G-DCJWE8G3RV"
+        };
 
-        // Funksjon for å vise listen over droner
-        function renderDroneList() {
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to render drone list
+        function renderDroneList(drones) {
             const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Tøm tabellinnhold før ny rendering
+            tableBody.innerHTML = ''; // Clear previous table content
 
-            droneList.forEach(drone => {
+            drones.forEach(drone => {
                 const row = tableBody.insertRow();
 
                 row.insertCell(0).textContent = drone.name;
@@ -119,11 +116,22 @@
             });
         }
 
-        // Legg til en ny drone i listen
-        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
+        // Fetch drones from Firestore
+        async function fetchDrones() {
+            try {
+                const dronesCollection = collection(db, "drones");
+                const droneSnapshot = await getDocs(dronesCollection);
+                const drones = droneSnapshot.docs.map(doc => doc.data());
+                renderDroneList(drones);
+            } catch (error) {
+                console.error("Error fetching drones: ", error);
+            }
+        }
+
+        // Add new drone to Firestore
+        document.getElementById("addDroneForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
-            // Hent form data
             const newDrone = {
                 name: document.getElementById("name").value,
                 regNum: document.getElementById("regNum").value,
@@ -134,32 +142,31 @@
                 returnDate: document.getElementById("returnDate").value
             };
 
-            // Legg til den nye dronen i listen
-            droneList.push(newDrone);
+            try {
+                // Add the new drone to Firestore
+                await addDoc(collection(db, "drones"), newDrone);
+                alert("Drone lagt til!");
+                fetchDrones(); // Re-fetch drones after adding
+            } catch (error) {
+                alert("Feil ved lagring: " + error.message);
+            }
 
-            // Gjør om visningen og vis drone-listen
-            renderDroneList();
-
-            // Tilbakestill skjemaet
+            // Reset the form
             document.getElementById("addDroneForm").reset();
-            alert("Drone lagt til!");
         });
 
-        // Vis drone-listen når man klikker på "Vis Droner"
+        // Show drone list
         document.getElementById("viewDronesBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "block";
             document.getElementById("addDroneSection").style.display = "none";
+            fetchDrones(); // Fetch drones from Firestore when viewing list
         });
 
-        // Vis skjema for å legge til drone når man klikker på "Legg Til Drone"
+        // Show add drone form
         document.getElementById("addDroneBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
         });
-
-        // Initialiser drone-listen med eksempler og render den
-        droneList = initialDrones;
-        renderDroneList();
     </script>
 </body>
 </html>

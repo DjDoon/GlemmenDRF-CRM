@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyB2bnVlprwEDxb-t0yfCui5wpI5_LbKhf8",
   authDomain: "crmdronefag.firebaseapp.com",
   projectId: "crmdronefag",
-  storageBucket: "crmdronefag.firebasestorage.app",
+  storageBucket: "crmdronefag.appspot.com",  // fixed the typo here
   messagingSenderId: "805041383422",
   appId: "1:805041383422:web:325d2ebea31b66270fc2af",
   measurementId: "G-DCJWE8G3RV"
