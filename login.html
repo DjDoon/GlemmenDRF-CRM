@@ -1,25 +1,15 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Drone CRM</title>
-    <link rel="stylesheet" href="login.css">
+    <title>Login with GitHub</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="login-container">
-        <h2>Logg inn</h2>
-        <form action="https://crm-glemmen-dronefag.herokuapp.com/login" method="POST">
-            <label for="username">Brukernavn:</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">Passord:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Logg inn</button>
-        </form>
+    <div class="container">
+        <h2>Login to Drone CRM</h2>
+        <a href="/auth/github" class="login-btn">Login with GitHub</a>
     </div>
-
 </body>
 </html>

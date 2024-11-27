@@ -1,61 +1,70 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const axios = require('axios');
+const path = require('path');
 
 const app = express();
+const PORT = 3000;
 
-// Bruk body-parser for å lese POST-data
-app.use(bodyParser.urlencoded({ extended: true }));
+// Replace with your GitHub OAuth App credentials
+const CLIENT_ID = 'your-client-id';
+const CLIENT_SECRET = 'your-client-secret';
 
-// Sett opp session management
-app.use(session({
-    secret: 'dronecrmsecret',  // En hemmelig nøkkel for å signere session cookies
-    resave: false,
-    saveUninitialized: true,
-}));
+// Serve static files (e.g., CSS, JS, images)
+app.use(express.static(__dirname));
 
-// Simulert brukerdatabase
-const users = {
-    'admin': { password: 'adminpass' },
-};
-
-// Serve login-siden
-app.get('/login', (req, res) => {
-    res.sendFile('C:/Users/jonerlings_o/OneDrive - Østfold fylkeskommune/Dokumenter/GitHub/GlemmenDRF-CRM/login.html');  // Bruk den fulle banen til filen
+// Serve the login.html file at the root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-
-// Håndter login POST request
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    if (users[username] && users[username].password === password) {
-        req.session.user = username;
-        res.redirect('/dashboard');
-    } else {
-        res.send('Feil brukernavn eller passord.');
-    }
+// Step 1: Redirect user to GitHub OAuth page
+app.get('/auth/github', (req, res) => {
+  const redirectUri = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}`;
+  res.redirect(redirectUri);
 });
 
-// Dashboard-side (beskyttet rute)
-app.get('/dashboard', (req, res) => {
-    if (req.session.user) {
-        res.send(`<h1>Velkommen, ${req.session.user}!</h1><a href="/logout">Logg ut</a>`);
-    } else {
-        res.redirect('/login');
-    }
-});
+// Step 2: Handle GitHub OAuth callback
+app.get('/callback', async (req, res) => {
+  const { code } = req.query;
 
-// Logout-funksjon
-app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.send('Feil ved utlogging.');
-        }
-        res.redirect('/login');
+  try {
+    // Exchange code for access token
+    const tokenResponse = await axios.post(
+      'https://github.com/login/oauth/access_token',
+      {
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        code,
+      },
+      {
+        headers: { Accept: 'application/json' },
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    // Use access token to fetch user data
+    const userResponse = await axios.get('https://api.github.com/user', {
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
+
+    const userData = userResponse.data;
+
+    // Display user data (or redirect to a dashboard)
+    res.send(`
+      <h1>Welcome, ${userData.login}!</h1>
+      <img src="${userData.avatar_url}" alt="Avatar" width="100">
+      <p>Name: ${userData.name}</p>
+      <p>GitHub URL: <a href="${userData.html_url}">${userData.html_url}</a></p>
+    `);
+  } catch (error) {
+    console.error('Error during authentication:', error);
+    res.status(500).send('Authentication failed');
+  }
 });
 
-// Start serveren på port 3000
-app.listen(3000, () => {
-    console.log('Serveren kjører på http://localhost:3000');
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
