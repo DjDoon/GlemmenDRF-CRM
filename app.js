@@ -24,13 +24,13 @@ async function getDrones() {
   const droneList = droneSnapshot.docs.map(doc => doc.data());  // Mapping Firestore data
 
   console.log("Drones fetched from Firestore:", droneList);
-  renderDroneList(droneList);  // Call the render function to display the drones
+  return droneList; // Return the list of drones
 }
 
 // Function to render drone list in the table
 function renderDroneList(drones) {
   const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
-  tableBody.innerHTML = '';  // Clear existing content
+  tableBody.innerHTML = '';  // Clear previous content
 
   drones.forEach(drone => {
     const row = tableBody.insertRow();

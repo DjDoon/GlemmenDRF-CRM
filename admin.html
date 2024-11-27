@@ -222,6 +222,12 @@
             document.getElementById("addDroneSection").style.display = "block";
             document.getElementById("droneListSection").style.display = "none";
         });
+
+        // Go back to drone list from add drone form
+        document.getElementById("viewDronesBtn").addEventListener("click", function() {
+            document.getElementById("addDroneSection").style.display = "none";
+            document.getElementById("droneListSection").style.display = "block";
+        });
     </script>
 </body>
 </html>
