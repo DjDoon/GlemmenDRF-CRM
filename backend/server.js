@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, '../'))); // Adjust to the parent fo
 
 // Serve the login.html file at the root path
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../login.html')); // Points to login.html in the parent folder
+    res.sendFile(path.join(__dirname, '../test.html'));
   });  
 
 // Step 1: Redirect user to GitHub OAuth page
