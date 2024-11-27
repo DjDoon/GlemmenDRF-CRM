@@ -90,9 +90,9 @@
             });
         }
 
-        // Fetch drones from Firestore ("droner" collection)
+        // Fetch drones from Firestore ("drones" collection)
         async function fetchDrones() {
-            const dronesCollection = collection(db, "droner");  // Using the correct collection name "droner"
+            const dronesCollection = collection(db, "drones");  // Using the correct collection name "drones"
             const droneSnapshot = await getDocs(dronesCollection);
             const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDroneList(drones);
