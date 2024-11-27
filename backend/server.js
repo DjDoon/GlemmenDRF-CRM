@@ -11,11 +11,11 @@ const CLIENT_ID = 'your-client-id';
 const CLIENT_SECRET = 'your-client-secret';
 
 // Serve static files (e.g., CSS, JS, images)
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, '../'))); // Adjust to the parent folder containing login.html
 
 // Serve the login.html file at the root path
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  res.sendFile(path.join(__dirname, '../login.html')); // Adjusted path
 });
 
 // Step 1: Redirect user to GitHub OAuth page
