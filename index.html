@@ -27,17 +27,13 @@
     </footer>
 
     <script>
-        // JavaScript for login functionality
         document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent form from submitting
-
+            event.preventDefault();
             const identifier = document.getElementById("identifier").value.trim();
 
             if (identifier === "Drone") {
-                // Redirect to user page
                 window.location.href = "bruker.html";
             } else if (identifier === "DroneAdmin") {
-                // Redirect to admin page
                 window.location.href = "admin.html";
             } else {
                 alert("Ugyldig ID. Vennligst prøv igjen.");
