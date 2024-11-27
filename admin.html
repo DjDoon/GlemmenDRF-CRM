@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Drone Organisering</title>
     <link rel="stylesheet" href="admin-style.css">
+    <script type="module" src="./app.js"></script>
 </head>
 <body>
     <header>
@@ -32,9 +33,7 @@
                         <th>Forventet Retur</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Existing drone data will be injected here -->
-                </tbody>
+                <tbody id="droneList"></tbody> <!-- Empty body to populate dynamically -->
             </table>
         </section>
 
@@ -76,56 +75,37 @@
     </footer>
 
     <script>
-        let droneList = [];
+        import { getDrones, addDrone } from './app.js';
 
-        // Example initial drones
-        const initialDrones = [
-            {
-                name: "Drone A",
-                regNum: "123-ABC",
-                lastMaintenance: "2024-11-15",
-                isLoaned: "Ja",
-                loanedTo: "Ola Nordmann",
-                loanedDate: "2024-11-20",
-                returnDate: "2024-11-30"
-            },
-            {
-                name: "Drone B",
-                regNum: "456-DEF",
-                lastMaintenance: "2024-11-01",
-                isLoaned: "Nei",
-                loanedTo: "",
-                loanedDate: "",
-                returnDate: ""
-            }
-        ];
+        // Render drone list for Admin
+        async function renderDroneList() {
+            const drones = await getDrones();
+            const droneListElement = document.getElementById("droneList");
 
-        // Function to render drone list
-        function renderDroneList() {
-            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Clear the table body before re-rendering
+            droneListElement.innerHTML = ''; // Clear the list before re-rendering
 
-            droneList.forEach(drone => {
-                const row = tableBody.insertRow();
-
-                row.insertCell(0).textContent = drone.name;
-                row.insertCell(1).textContent = drone.regNum;
-                row.insertCell(2).textContent = drone.lastMaintenance;
-                row.insertCell(3).textContent = drone.isLoaned;
-                row.insertCell(4).textContent = drone.loanedTo || "-";
-                row.insertCell(5).textContent = drone.loanedDate || "-";
-                row.insertCell(6).textContent = drone.returnDate || "-";
+            drones.forEach(drone => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${drone.name}</td>
+                    <td>${drone.regNumber}</td>
+                    <td>${drone.lastMaintenance}</td>
+                    <td>${drone.isLoaned}</td>
+                    <td>${drone.loanedTo || "-"}</td>
+                    <td>${drone.loanedDate || "-"}</td>
+                    <td>${drone.returnDate || "-"}</td>
+                `;
+                droneListElement.appendChild(row);
             });
         }
 
-        // Add new drone to list
-        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
+        // Handle adding a new drone
+        document.getElementById("addDroneForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
-            // Get form data
             const newDrone = {
                 name: document.getElementById("name").value,
-                regNum: document.getElementById("regNum").value,
+                regNumber: document.getElementById("regNum").value,
                 lastMaintenance: document.getElementById("lastMaintenance").value,
                 isLoaned: document.getElementById("isLoaned").value,
                 loanedTo: document.getElementById("loanedTo").value,
@@ -133,31 +113,29 @@
                 returnDate: document.getElementById("returnDate").value
             };
 
-            // Add new drone to drone list
-            droneList.push(newDrone);
+            // Add the new drone to Firestore
+            await addDrone(newDrone);
 
-            // Re-render the drone list to display the new drone
+            // Re-render the list after adding a drone
             renderDroneList();
 
-            // Reset the form
+            // Reset the form and alert
             document.getElementById("addDroneForm").reset();
             alert("Drone lagt til!");
         });
 
-        // Show the drone list when clicking "Vis Droner"
+        // Toggle between viewing drones and adding drones
         document.getElementById("viewDronesBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "block";
             document.getElementById("addDroneSection").style.display = "none";
         });
 
-        // Show the add drone form when clicking "Legg Til Drone"
         document.getElementById("addDroneBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
         });
 
-        // Initialize the drone list with initial drones and render it
-        droneList = initialDrones;
+        // Initialize and render drone list on page load
         renderDroneList();
     </script>
 </body>
