@@ -18,12 +18,6 @@
         th {
             background-color: #f2f2f2;
         }
-        .edit-btn {
-            background-color: #f0ad4e;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -96,9 +90,9 @@
             });
         }
 
-        // Fetch drones from Firestore
+        // Fetch drones from Firestore ("droner" collection)
         async function fetchDrones() {
-            const dronesCollection = collection(db, "drones");
+            const dronesCollection = collection(db, "droner");  // Using the correct collection name "droner"
             const droneSnapshot = await getDocs(dronesCollection);
             const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDroneList(drones);
