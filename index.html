@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drone Organisering</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Import Firebase SDK (add firebase.js from the npm folder) -->
+    <script type="module" src="./app.js"></script>
 </head>
 <body>
     <header>
@@ -27,14 +29,15 @@
     </footer>
 
     <script>
+        // Login form handler
         document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const identifier = document.getElementById("identifier").value.trim();
 
             if (identifier === "Drone") {
-                window.location.href = "bruker.html";
+                window.location.href = "bruker.html"; // Redirect to drone user page
             } else if (identifier === "DroneAdmin") {
-                window.location.href = "admin.html";
+                window.location.href = "admin.html"; // Redirect to admin page
             } else {
                 alert("Ugyldig ID. Vennligst prøv igjen.");
             }
