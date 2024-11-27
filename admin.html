@@ -40,6 +40,12 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        #editDroneSection {
+            margin-top: 20px;
+        }
+        #editDroneSection input, #editDroneSection select {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +112,38 @@
                 <button type="submit">Legg Til</button>
             </form>
         </section>
+
+        <!-- Edit drone form -->
+        <section id="editDroneSection" style="display:none;">
+            <h2>Rediger Drone</h2>
+            <form id="editDroneForm">
+                <label for="editName">Drone Navn:</label>
+                <input type="text" id="editName" name="editName" required placeholder="Drone navn">
+
+                <label for="editRegNum">Regnummer:</label>
+                <input type="text" id="editRegNum" name="editRegNum" required placeholder="Drone regnummer">
+
+                <label for="editLastMaintenance">Siste Vedlikehold:</label>
+                <input type="date" id="editLastMaintenance" name="editLastMaintenance" required>
+
+                <label for="editIsLoaned">Er Utlånt?</label>
+                <select id="editIsLoaned" name="editIsLoaned" required>
+                    <option value="Nei">Nei</option>
+                    <option value="Ja">Ja</option>
+                </select>
+
+                <label for="editLoanedTo">Utlånt Til:</label>
+                <input type="text" id="editLoanedTo" name="editLoanedTo" placeholder="F.eks. Ola Nordmann">
+
+                <label for="editLoanedDate">Utlånt Dato:</label>
+                <input type="date" id="editLoanedDate" name="editLoanedDate">
+
+                <label for="editReturnDate">Forventet Retur:</label>
+                <input type="date" id="editReturnDate" name="editReturnDate">
+
+                <button type="button" id="editDroneBtn">Lagre Endringer</button>
+            </form>
+        </section>
     </main>
 
     <footer>
@@ -170,26 +208,45 @@
         async function editDrone(droneId, rowIndex) {
             const droneRow = document.getElementById("droneListTable").rows[rowIndex + 1];
 
-            const lastMaintenance = prompt("Siste Vedlikehold (YYYY-MM-DD):", droneRow.cells[2].textContent);
-            const isLoaned = prompt("Er Utlånt? (Ja/Nei):", droneRow.cells[3].textContent);
-            const loanedTo = prompt("Utlånt Til:", droneRow.cells[4].textContent);
-            const loanedDate = prompt("Utlånt Dato (YYYY-MM-DD):", droneRow.cells[5].textContent);
-            const returnDate = prompt("Forventet Retur (YYYY-MM-DD):", droneRow.cells[6].textContent);
+            document.getElementById("editName").value = droneRow.cells[0].textContent;
+            document.getElementById("editRegNum").value = droneRow.cells[1].textContent;
+            document.getElementById("editLastMaintenance").value = droneRow.cells[2].textContent;
+            document.getElementById("editIsLoaned").value = droneRow.cells[3].textContent;
+            document.getElementById("editLoanedTo").value = droneRow.cells[4].textContent;
+            document.getElementById("editLoanedDate").value = droneRow.cells[5].textContent;
+            document.getElementById("editReturnDate").value = droneRow.cells[6].textContent;
 
-            const updatedData = {
-                lastMaintenance,
-                isLoaned,
-                loanedTo,
-                loanedDate,
-                returnDate
+            // Store the droneId for later use when updating the Firestore document
+            document.getElementById("editDroneBtn").setAttribute("data-drone-id", droneId);
+
+            // Show the edit section
+            document.getElementById("editDroneSection").style.display = "block";
+            document.getElementById("droneListSection").style.display = "none";
+        }
+
+        // Update drone in Firestore
+        document.getElementById("editDroneBtn").addEventListener("click", async function() {
+            const droneId = document.getElementById("editDroneBtn").getAttribute("data-drone-id");
+
+            const updatedDrone = {
+                name: document.getElementById("editName").value,
+                regNum: document.getElementById("editRegNum").value,
+                lastMaintenance: document.getElementById("editLastMaintenance").value,
+                isLoaned: document.getElementById("editIsLoaned").value,
+                loanedTo: document.getElementById("editLoanedTo").value,
+                loanedDate: document.getElementById("editLoanedDate").value,
+                returnDate: document.getElementById("editReturnDate").value
             };
 
             const droneDoc = doc(db, "drones", droneId);
-            await updateDoc(droneDoc, updatedData);
+            await updateDoc(droneDoc, updatedDrone);
 
             alert("Drone oppdatert!");
             fetchDrones();  // Re-fetch drones after update
-        }
+
+            document.getElementById("editDroneSection").style.display = "none";
+            document.getElementById("droneListSection").style.display = "block";
+        });
 
         // Add new drone to Firestore
         document.getElementById("addDroneForm").addEventListener("submit", async function(event) {
