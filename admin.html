@@ -20,7 +20,7 @@
         <!-- Drone list -->
         <section id="droneListSection">
             <h2>Oversikt over Droner</h2>
-            <table>
+            <table id="droneListTable">
                 <thead>
                     <tr>
                         <th>Navn</th>
@@ -33,24 +33,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Drone A</td>
-                        <td>123-ABC</td>
-                        <td>2024-11-15</td>
-                        <td>Ja</td>
-                        <td>Ola Nordmann</td>
-                        <td>2024-11-20</td>
-                        <td>2024-11-30</td>
-                    </tr>
-                    <tr>
-                        <td>Drone B</td>
-                        <td>456-DEF</td>
-                        <td>2024-11-01</td>
-                        <td>Nei</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                    </tr>
+                    <!-- Existing drone data will be injected here -->
                 </tbody>
             </table>
         </section>
@@ -74,6 +57,15 @@
                     <option value="Ja">Ja</option>
                 </select>
 
+                <label for="loanedTo">Utlånt Til:</label>
+                <input type="text" id="loanedTo" name="loanedTo" placeholder="F.eks. Ola Nordmann">
+
+                <label for="loanedDate">Utlånt Dato:</label>
+                <input type="date" id="loanedDate" name="loanedDate">
+
+                <label for="returnDate">Forventet Retur:</label>
+                <input type="date" id="returnDate" name="returnDate">
+
                 <button type="submit">Legg Til</button>
             </form>
         </section>
@@ -84,20 +76,89 @@
     </footer>
 
     <script>
+        let droneList = [];
+
+        // Example initial drones
+        const initialDrones = [
+            {
+                name: "Drone A",
+                regNum: "123-ABC",
+                lastMaintenance: "2024-11-15",
+                isLoaned: "Ja",
+                loanedTo: "Ola Nordmann",
+                loanedDate: "2024-11-20",
+                returnDate: "2024-11-30"
+            },
+            {
+                name: "Drone B",
+                regNum: "456-DEF",
+                lastMaintenance: "2024-11-01",
+                isLoaned: "Nei",
+                loanedTo: "",
+                loanedDate: "",
+                returnDate: ""
+            }
+        ];
+
+        // Function to render drone list
+        function renderDroneList() {
+            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear the table body before re-rendering
+
+            droneList.forEach(drone => {
+                const row = tableBody.insertRow();
+
+                row.insertCell(0).textContent = drone.name;
+                row.insertCell(1).textContent = drone.regNum;
+                row.insertCell(2).textContent = drone.lastMaintenance;
+                row.insertCell(3).textContent = drone.isLoaned;
+                row.insertCell(4).textContent = drone.loanedTo || "-";
+                row.insertCell(5).textContent = drone.loanedDate || "-";
+                row.insertCell(6).textContent = drone.returnDate || "-";
+            });
+        }
+
+        // Add new drone to list
+        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Get form data
+            const newDrone = {
+                name: document.getElementById("name").value,
+                regNum: document.getElementById("regNum").value,
+                lastMaintenance: document.getElementById("lastMaintenance").value,
+                isLoaned: document.getElementById("isLoaned").value,
+                loanedTo: document.getElementById("loanedTo").value,
+                loanedDate: document.getElementById("loanedDate").value,
+                returnDate: document.getElementById("returnDate").value
+            };
+
+            // Add new drone to drone list
+            droneList.push(newDrone);
+
+            // Re-render the drone list to display the new drone
+            renderDroneList();
+
+            // Reset the form
+            document.getElementById("addDroneForm").reset();
+            alert("Drone lagt til!");
+        });
+
+        // Show the drone list when clicking "Vis Droner"
         document.getElementById("viewDronesBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "block";
             document.getElementById("addDroneSection").style.display = "none";
         });
 
+        // Show the add drone form when clicking "Legg Til Drone"
         document.getElementById("addDroneBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
         });
 
-        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            alert("Drone lagt til!");
-        });
+        // Initialize the drone list with initial drones and render it
+        droneList = initialDrones;
+        renderDroneList();
     </script>
 </body>
 </html>
