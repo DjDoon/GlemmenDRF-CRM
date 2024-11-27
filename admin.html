@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Drone Organisering</title>
     <link rel="stylesheet" href="admin-style.css">
-    <script type="module" src="./app.js"></script>
 </head>
 <body>
     <header>
@@ -13,6 +12,7 @@
     </header>
 
     <main>
+        <!-- Buttons to show drone list or add new drone -->
         <section>
             <button id="viewDronesBtn">Vis Droner</button>
             <button id="addDroneBtn">Legg Til Drone</button>
@@ -33,7 +33,9 @@
                         <th>Forventet Retur</th>
                     </tr>
                 </thead>
-                <tbody id="droneList"></tbody> <!-- Empty body to populate dynamically -->
+                <tbody>
+                    <!-- Existing drone data will be injected here -->
+                </tbody>
             </table>
         </section>
 
@@ -75,37 +77,56 @@
     </footer>
 
     <script>
-        import { getDrones, addDrone } from './app.js';
+        let droneList = [];
 
-        // Render drone list for Admin
-        async function renderDroneList() {
-            const drones = await getDrones();
-            const droneListElement = document.getElementById("droneList");
+        // Eksempler på eksisterende droner
+        const initialDrones = [
+            {
+                name: "Drone A",
+                regNum: "123-ABC",
+                lastMaintenance: "2024-11-15",
+                isLoaned: "Ja",
+                loanedTo: "Ola Nordmann",
+                loanedDate: "2024-11-20",
+                returnDate: "2024-11-30"
+            },
+            {
+                name: "Drone B",
+                regNum: "456-DEF",
+                lastMaintenance: "2024-11-01",
+                isLoaned: "Nei",
+                loanedTo: "",
+                loanedDate: "",
+                returnDate: ""
+            }
+        ];
 
-            droneListElement.innerHTML = ''; // Clear the list before re-rendering
+        // Funksjon for å vise listen over droner
+        function renderDroneList() {
+            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Tøm tabellinnhold før ny rendering
 
-            drones.forEach(drone => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${drone.name}</td>
-                    <td>${drone.regNumber}</td>
-                    <td>${drone.lastMaintenance}</td>
-                    <td>${drone.isLoaned}</td>
-                    <td>${drone.loanedTo || "-"}</td>
-                    <td>${drone.loanedDate || "-"}</td>
-                    <td>${drone.returnDate || "-"}</td>
-                `;
-                droneListElement.appendChild(row);
+            droneList.forEach(drone => {
+                const row = tableBody.insertRow();
+
+                row.insertCell(0).textContent = drone.name;
+                row.insertCell(1).textContent = drone.regNum;
+                row.insertCell(2).textContent = drone.lastMaintenance;
+                row.insertCell(3).textContent = drone.isLoaned;
+                row.insertCell(4).textContent = drone.loanedTo || "-";
+                row.insertCell(5).textContent = drone.loanedDate || "-";
+                row.insertCell(6).textContent = drone.returnDate || "-";
             });
         }
 
-        // Handle adding a new drone
-        document.getElementById("addDroneForm").addEventListener("submit", async function(event) {
+        // Legg til en ny drone i listen
+        document.getElementById("addDroneForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
+            // Hent form data
             const newDrone = {
                 name: document.getElementById("name").value,
-                regNumber: document.getElementById("regNum").value,
+                regNum: document.getElementById("regNum").value,
                 lastMaintenance: document.getElementById("lastMaintenance").value,
                 isLoaned: document.getElementById("isLoaned").value,
                 loanedTo: document.getElementById("loanedTo").value,
@@ -113,29 +134,31 @@
                 returnDate: document.getElementById("returnDate").value
             };
 
-            // Add the new drone to Firestore
-            await addDrone(newDrone);
+            // Legg til den nye dronen i listen
+            droneList.push(newDrone);
 
-            // Re-render the list after adding a drone
+            // Gjør om visningen og vis drone-listen
             renderDroneList();
 
-            // Reset the form and alert
+            // Tilbakestill skjemaet
             document.getElementById("addDroneForm").reset();
             alert("Drone lagt til!");
         });
 
-        // Toggle between viewing drones and adding drones
+        // Vis drone-listen når man klikker på "Vis Droner"
         document.getElementById("viewDronesBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "block";
             document.getElementById("addDroneSection").style.display = "none";
         });
 
+        // Vis skjema for å legge til drone når man klikker på "Legg Til Drone"
         document.getElementById("addDroneBtn").addEventListener("click", function() {
             document.getElementById("droneListSection").style.display = "none";
             document.getElementById("addDroneSection").style.display = "block";
         });
 
-        // Initialize and render drone list on page load
+        // Initialiser drone-listen med eksempler og render den
+        droneList = initialDrones;
         renderDroneList();
     </script>
 </body>
