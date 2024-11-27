@@ -4,18 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bruker - Drone Organisering</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="./app.js"></script>
+    <link rel="stylesheet" href="admin-style.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .edit-btn {
+            background-color: #f0ad4e;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Velkommen, Drone Bruker</h1>
+        <h1>Velkommen, Bruker</h1>
     </header>
 
     <main>
-        <section>
+        <!-- Drone list -->
+        <section id="droneListSection">
             <h2>Oversikt over Droner</h2>
-            <table>
+            <table id="droneListTable">
                 <thead>
                     <tr>
                         <th>Navn</th>
@@ -27,7 +47,9 @@
                         <th>Forventet Retur</th>
                     </tr>
                 </thead>
-                <tbody id="droneList"></tbody> <!-- Empty body to populate dynamically -->
+                <tbody>
+                    <!-- Drone data will be injected here -->
+                </tbody>
             </table>
         </section>
     </main>
@@ -36,31 +58,54 @@
         <p>© 2024 Drone Organisering</p>
     </footer>
 
-    <script>
-        import { getDrones } from './app.js';
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-        async function displayDrones() {
-            const drones = await getDrones();
-            const droneListElement = document.getElementById("droneList");
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2bnVlprwEDxb-t0yfCui5wpI5_LbKhf8",
+            authDomain: "crmdronefag.firebaseapp.com",
+            projectId: "crmdronefag",
+            storageBucket: "crmdronefag.appspot.com",
+            messagingSenderId: "805041383422",
+            appId: "1:805041383422:web:325d2ebea31b66270fc2af",
+            measurementId: "G-DCJWE8G3RV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to render drone list
+        function renderDroneList(drones) {
+            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear previous table content
 
             drones.forEach(drone => {
-                const row = document.createElement("tr");
-                
-                row.innerHTML = `
-                    <td>${drone.name}</td>
-                    <td>${drone.regNum}</td>
-                    <td>${drone.lastMaintenance}</td>
-                    <td>${drone.isLoaned}</td>
-                    <td>${drone.loanedTo || "-"}</td>
-                    <td>${drone.loanedDate || "-"}</td>
-                    <td>${drone.returnDate || "-"}</td>
-                `;
+                const row = tableBody.insertRow();
 
-                droneListElement.appendChild(row);
+                row.insertCell(0).textContent = drone.name;
+                row.insertCell(1).textContent = drone.regNum;
+                row.insertCell(2).textContent = drone.lastMaintenance;
+                row.insertCell(3).textContent = drone.isLoaned;
+                row.insertCell(4).textContent = drone.loanedTo || "-";
+                row.insertCell(5).textContent = drone.loanedDate || "-";
+                row.insertCell(6).textContent = drone.returnDate || "-";
             });
         }
 
-        displayDrones();  // Fetch and display drones on page load
+        // Fetch drones from Firestore
+        async function fetchDrones() {
+            const dronesCollection = collection(db, "drones");
+            const droneSnapshot = await getDocs(dronesCollection);
+            const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderDroneList(drones);
+        }
+
+        // Initialize app
+        fetchDrones();  // Fetch drones when page loads
     </script>
 </body>
 </html>
