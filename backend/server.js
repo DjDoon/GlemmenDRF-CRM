@@ -10,7 +10,7 @@ const PORT = 3000;
 const CLIENT_ID = 'your-client-id';
 const CLIENT_SECRET = 'your-client-secret';
 
-// Serve static files (e.g., CSS, JS, images)
+// Serve static files (CSS, JS, images)
 app.use(express.static(path.join(__dirname, '../'))); // Adjust to the parent folder containing login.html
 
 // Serve the login.html file at the root path
