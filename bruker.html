@@ -3,53 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bruker - Drone Organisering</title>
-    <link rel="stylesheet" href="admin-style.css">
+    <title>Drone Brukeroversikt</title>
+    <link rel="stylesheet" href="bruker-style.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #007BFF;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        main {
+            padding: 1em;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 1em;
         }
         th, td {
-            border: 1px solid hsl(239, 70%, 65%);
+            border: 1px solid #ccc;
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background: #007BFF;
+            color: white;
+        }
+        .available {
+            color: green;
+        }
+        .unavailable {
+            color: red;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Velkommen, Bruker</h1>
+        <h1>Droner Tilgjengelig for Utlån</h1>
     </header>
 
     <main>
-        <!-- Drone list -->
-        <section id="droneListSection">
-            <h2>Oversikt over Droner</h2>
-            <table id="droneListTable">
+        <section>
+            <table id="droneUserTable">
                 <thead>
                     <tr>
                         <th>Navn</th>
                         <th>Regnummer</th>
                         <th>Siste Vedlikehold</th>
-                        <th>Utlånt</th>
+                        <th>Status</th>
                         <th>Utlånt Til</th>
-                        <th>Utlånt Dato</th>
                         <th>Forventet Retur</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Drone data will be injected here -->
+                    <!-- Drone data will be dynamically loaded here -->
                 </tbody>
             </table>
         </section>
     </main>
 
     <footer>
-        <p>© 2024 Dronefag</p>
+        <p style="text-align: center;">© 2024 Dronefag</p>
     </footer>
 
     <!-- Firebase SDK -->
@@ -72,10 +92,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Function to render drone list
-        function renderDroneList(drones) {
-            const tableBody = document.getElementById("droneListTable").getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Clear previous table content
+        async function fetchDronesForUsers() {
+            const dronesCollection = collection(db, "drones");
+            const droneSnapshot = await getDocs(dronesCollection);
+            const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            const tableBody = document.getElementById("droneUserTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear table content
 
             drones.forEach(drone => {
                 const row = tableBody.insertRow();
@@ -83,23 +106,18 @@
                 row.insertCell(0).textContent = drone.name;
                 row.insertCell(1).textContent = drone.regNum;
                 row.insertCell(2).textContent = drone.lastMaintenance;
-                row.insertCell(3).textContent = drone.isLoaned;
+
+                const statusCell = row.insertCell(3);
+                statusCell.textContent = drone.isLoaned === "Ja" ? "Utlånt" : "Tilgjengelig";
+                statusCell.className = drone.isLoaned === "Ja" ? "unavailable" : "available";
+
                 row.insertCell(4).textContent = drone.loanedTo || "-";
-                row.insertCell(5).textContent = drone.loanedDate || "-";
-                row.insertCell(6).textContent = drone.returnDate || "-";
+                row.insertCell(5).textContent = drone.returnDate || "-";
             });
         }
 
-        // Fetch drones from Firestore ("drones" collection)
-        async function fetchDrones() {
-            const dronesCollection = collection(db, "drones");  // Using the correct collection name "drones"
-            const droneSnapshot = await getDocs(dronesCollection);
-            const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderDroneList(drones);
-        }
-
-        // Initialize app
-        fetchDrones();  // Fetch drones when page loads
+        // Fetch the drones when the page loads
+        document.addEventListener("DOMContentLoaded", fetchDronesForUsers);
     </script>
 </body>
 </html>
