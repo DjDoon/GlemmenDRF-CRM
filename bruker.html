@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Drone Organisering</title>
-    <link rel="stylesheet" href="admin-style.css">
+    <title>Drone Brukeroversikt</title>
+    <link rel="stylesheet" href="bruker-style.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #007BFF;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        main {
+            padding: 1em;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 1em;
         }
         th, td {
             border: 1px solid #ccc;
@@ -17,181 +32,44 @@
             text-align: left;
         }
         th {
-            background-color: #007BFF;
+            background: #007BFF;
             color: white;
         }
-        .category-header {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            text-align: left;
+        .available {
+            color: green;
         }
-        input, select {
-            width: 100%;
-            padding: 5px;
-            margin: 5px 0;
-        }
-        button {
-            padding: 8px 12px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .edit-btn {
-            background-color: #f0ad4e;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .save-btn {
-            background-color: #5bc0de;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        #editDroneSection {
-            margin-top: 20px;
-        }
-        #editDroneSection input, #editDroneSection select {
-            margin-bottom: 10px;
+        .unavailable {
+            color: red;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Velkommen, DroneAdmin</h1>
+        <h1>Liste over Droner</h1>
     </header>
 
     <main>
         <section>
-            <button id="viewDronesBtn">Vis Droner</button>
-            <button id="addDroneBtn">Legg Til Drone</button>
-        </section>
-
-        <!-- Drone list -->
-        <section id="droneListSection">
-            <h2>Oversikt over Droner</h2>
-
-            <!-- Elevdroner -->
-            <h3 class="category-header">Elevdroner</h3>
-            <table id="studentDroneTable">
+            <table id="droneUserTable">
                 <thead>
                     <tr>
                         <th>Navn</th>
                         <th>Regnummer</th>
                         <th>Siste Vedlikehold</th>
-                        <th>Utlånt</th>
+                        <th>Status</th>
                         <th>Utlånt Til</th>
-                        <th>Utlånt Dato</th>
                         <th>Forventet Retur</th>
-                        <th>Rediger</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    <!-- Drone data will be dynamically loaded here -->
+                </tbody>
             </table>
-
-            <!-- Lærerdroner -->
-            <h3 class="category-header">Lærerdroner</h3>
-            <table id="teacherDroneTable">
-                <thead>
-                    <tr>
-                        <th>Navn</th>
-                        <th>Regnummer</th>
-                        <th>Siste Vedlikehold</th>
-                        <th>Utlånt</th>
-                        <th>Utlånt Til</th>
-                        <th>Utlånt Dato</th>
-                        <th>Forventet Retur</th>
-                        <th>Rediger</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <!-- På utlån -->
-            <h3 class="category-header">På utlån</h3>
-            <table id="loanedDroneTable">
-                <thead>
-                    <tr>
-                        <th>Navn</th>
-                        <th>Regnummer</th>
-                        <th>Siste Vedlikehold</th>
-                        <th>Utlånt</th>
-                        <th>Utlånt Til</th>
-                        <th>Utlånt Dato</th>
-                        <th>Forventet Retur</th>
-                        <th>Rediger</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </section>
-
-        <!-- Add drone form -->
-        <section id="addDroneSection" style="display:none;">
-            <h2>Legg Til Drone</h2>
-            <form id="addDroneForm">
-                <label for="name">Drone Navn:</label>
-                <input type="text" id="name" name="name" required placeholder="Drone navn">
-
-                <label for="regNum">Regnummer:</label>
-                <input type="text" id="regNum" name="regNum" required placeholder="Drone regnummer">
-
-                <label for="lastMaintenance">Siste Vedlikehold:</label>
-                <input type="date" id="lastMaintenance" name="lastMaintenance" required>
-
-                <label for="isLoaned">Er Utlånt?</label>
-                <select id="isLoaned" name="isLoaned" required>
-                    <option value="Nei">Nei</option>
-                    <option value="Ja">Ja</option>
-                </select>
-
-                <label for="loanedTo">Utlånt Til:</label>
-                <input type="text" id="loanedTo" name="loanedTo" placeholder="F.eks. Ola Nordmann">
-
-                <label for="loanedDate">Utlånt Dato:</label>
-                <input type="date" id="loanedDate" name="loanedDate">
-
-                <label for="returnDate">Forventet Retur:</label>
-                <input type="date" id="returnDate" name="returnDate">
-
-                <button type="submit">Legg Til</button>
-            </form>
-        </section>
-
-        <!-- Edit drone form -->
-        <section id="editDroneSection" style="display:none;">
-            <h2>Rediger Drone</h2>
-            <form id="editDroneForm">
-                <label for="editName">Drone Navn:</label>
-                <input type="text" id="editName" name="editName" required placeholder="Drone navn">
-
-                <label for="editRegNum">Regnummer:</label>
-                <input type="text" id="editRegNum" name="editRegNum" required placeholder="Drone regnummer">
-
-                <label for="editLastMaintenance">Siste Vedlikehold:</label>
-                <input type="date" id="editLastMaintenance" name="editLastMaintenance" required>
-
-                <label for="editIsLoaned">Er Utlånt?</label>
-                <select id="editIsLoaned" name="editIsLoaned" required>
-                    <option value="Nei">Nei</option>
-                    <option value="Ja">Ja</option>
-                </select>
-
-                <label for="editLoanedTo">Utlånt Til:</label>
-                <input type="text" id="editLoanedTo" name="editLoanedTo" placeholder="F.eks. Ola Nordmann">
-
-                <label for="editLoanedDate">Utlånt Dato:</label>
-                <input type="date" id="editLoanedDate" name="editLoanedDate">
-
-                <label for="editReturnDate">Forventet Retur:</label>
-                <input type="date" id="editReturnDate" name="editReturnDate">
-
-                <button type="button" id="editDroneBtn">Lagre Endringer</button>
-            </form>
         </section>
     </main>
 
     <footer>
-        <p>© 2024 Dronefag</p>
+        <p style="text-align: center;">© 2024 Dronefag</p>
     </footer>
 
     <!-- Firebase SDK -->
@@ -199,57 +77,47 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "API_KEY_HERE",
-            authDomain: "DOMAIN_HERE",
-            projectId: "PROJECT_ID_HERE",
-            storageBucket: "STORAGE_HERE",
-            messagingSenderId: "MESSAGE_SENDER_ID",
-            appId: "APP_ID"
+            apiKey: "AIzaSyB2bnVlprwEDxb-t0yfCui5wpI5_LbKhf8",
+            authDomain: "crmdronefag.firebaseapp.com",
+            projectId: "crmdronefag",
+            storageBucket: "crmdronefag.appspot.com",
+            messagingSenderId: "805041383422",
+            appId: "1:805041383422:web:325d2ebea31b66270fc2af",
+            measurementId: "G-DCJWE8G3RV"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function fetchAndCategorizeDrones() {
+        async function fetchDronesForUsers() {
             const dronesCollection = collection(db, "drones");
-            const snapshot = await getDocs(dronesCollection);
-            const drones = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-            // Clear tables
-            document.getElementById("studentDroneTable").querySelector("tbody").innerHTML = "";
-            document.getElementById("teacherDroneTable").querySelector("tbody").innerHTML = "";
-            document.getElementById("loanedDroneTable").querySelector("tbody").innerHTML = "";
+            const droneSnapshot = await getDocs(dronesCollection);
+            const drones = droneSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            
+            const tableBody = document.getElementById("droneUserTable").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear table content
 
             drones.forEach(drone => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${drone.name}</td>
-                    <td>${drone.regNum}</td>
-                    <td>${drone.lastMaintenance}</td>
-                    <td>${drone.isLoaned}</td>
-                    <td>${drone.loanedTo || ""}</td>
-                    <td>${drone.loanedDate || ""}</td>
-                    <td>${drone.returnDate || ""}</td>
-                    <td><button class="edit-btn" data-id="${drone.id}">Rediger</button></td>
-                `;
+                const row = tableBody.insertRow();
 
-                if (drone.category === "Elevdrone") {
-                    document.getElementById("studentDroneTable").querySelector("tbody").appendChild(row);
-                } else if (drone.category === "Lærerdroner") {
-                    document.getElementById("teacherDroneTable").querySelector("tbody").appendChild(row);
-                } else if (drone.isLoaned === "Ja") {
-                    document.getElementById("loanedDroneTable").querySelector("tbody").appendChild(row);
-                }
+                row.insertCell(0).textContent = drone.name;
+                row.insertCell(1).textContent = drone.regNum;
+                row.insertCell(2).textContent = drone.lastMaintenance;
+
+                const statusCell = row.insertCell(3);
+                statusCell.textContent = drone.isLoaned === "Ja" ? "Utlånt" : "Tilgjengelig";
+                statusCell.className = drone.isLoaned === "Ja" ? "unavailable" : "available";
+
+                row.insertCell(4).textContent = drone.loanedTo || "-";
+                row.insertCell(5).textContent = drone.returnDate || "-";
             });
         }
 
-        document.getElementById("viewDronesBtn").addEventListener("click", fetchAndCategorizeDrones);
-
-        // Add event listeners for form submissions here...
-
+        // Fetch the drones when the page loads
+        document.addEventListener("DOMContentLoaded", fetchDronesForUsers);
     </script>
 </body>
 </html>
